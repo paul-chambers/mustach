@@ -1,4 +1,15 @@
 
+1.3.0 (?)
+---------
+
+Changes:
+ - Change signature of enter to indicates the expected result
+   for entering. That new signature is normally binary compatible
+   with the previous one, meaning that except a warning, previous
+   code using mustach core should still work without change and are
+   binary compatible (but it depends on the calling convention used,
+   here I suppose cdecl, but see option -mrtd of gcc).
+
 1.2.2 (2021-10-28)
 ------------------
 

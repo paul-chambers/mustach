@@ -24,7 +24,7 @@ struct iwrap {
 	void *closure; /* closure for: enter, next, leave, emit, get */
 	int (*put)(void *closure, const char *name, int escape, FILE *file);
 	void *closure_put; /* closure for put */
-	int (*enter)(void *closure, const char *name);
+	int (*enter)(void *closure, const char *name, int expected);
 	int (*next)(void *closure);
 	int (*leave)(void *closure);
 	int (*get)(void *closure, const char *name, struct mustach_sbuf *sbuf);
@@ -239,7 +239,7 @@ static int process(const char *template, size_t length, struct iwrap *iwrap, FIL
 	char opstr[MUSTACH_MAX_DELIM_LENGTH], clstr[MUSTACH_MAX_DELIM_LENGTH];
 	char name[MUSTACH_MAX_LENGTH + 1], c;
 	const char *beg, *term, *end;
-	struct { const char *name, *again; size_t length; unsigned enabled: 1, entered: 1; } stack[MUSTACH_MAX_DEPTH];
+	struct { const char *name, *again; size_t length; unsigned enabled: 1, entered: 1, iterate: 1; } stack[MUSTACH_MAX_DEPTH];
 	size_t oplen, cllen, len, l;
 	int depth, rc, enabled, stdalone;
 	struct prefix pref;
@@ -393,17 +393,15 @@ get_name:
 			if (depth == MUSTACH_MAX_DEPTH)
 				return MUSTACH_ERROR_TOO_DEEP;
 			rc = enabled;
-			if (rc) {
-				rc = iwrap->enter(iwrap->closure, name);
-				if (rc < 0)
-					return rc;
-			}
+			if (rc)
+				rc = iwrap->enter(iwrap->closure, name, c == '#');
 			stack[depth].name = beg;
 			stack[depth].again = template;
 			stack[depth].length = len;
 			stack[depth].enabled = enabled != 0;
 			stack[depth].entered = rc != 0;
-			if ((c == '#') == (rc == 0))
+			stack[depth].iterate = rc > 0;
+			if ((c == '#') == (rc <= 0))
 				enabled = 0;
 			depth++;
 			break;
@@ -411,7 +409,7 @@ get_name:
 			/* end section */
 			if (depth-- == 0 || len != stack[depth].length || memcmp(stack[depth].name, name, len))
 				return MUSTACH_ERROR_CLOSING;
-			rc = enabled && stack[depth].entered ? iwrap->next(iwrap->closure) : 0;
+			rc = enabled && stack[depth].iterate ? iwrap->next(iwrap->closure) : 0;
 			if (rc < 0)
 				return rc;
 			if (rc) {

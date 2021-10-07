@@ -14,7 +14,7 @@ struct mustach_sbuf; /* see below */
 /**
  * Current version of mustach and its derivates
  */
-#define MUSTACH_VERSION 102
+#define MUSTACH_VERSION 103
 #define MUSTACH_VERSION_MAJOR (MUSTACH_VERSION / 100)
 #define MUSTACH_VERSION_MINOR (MUSTACH_VERSION % 100)
 
@@ -99,6 +99,13 @@ struct mustach_sbuf; /* see below */
  *         a negative value.
  *         When 1 is returned, the function must activate the first
  *         item of the section.
+ *         'enter' is called for both normal and invert sections, thus
+ *         in order to use mustach for scanning mustache templates, the
+ *         new parameter 'expected' introduced in mustach 1.3 tells if
+ *         it is a normal (1) or inverted (0) section.
+ *         Since version 1.3, returning a negative value doesn't raise an
+ *         error of the same negative value but is interpreted as being
+ *         a returned zero implying a call to leave at the end of the section.
  *
  * @next: Activates the next item of the section if it exists.
  *        Musts return 1 when the next item is activated.
@@ -165,7 +172,7 @@ struct mustach_sbuf; /* see below */
 struct mustach_itf {
 	int (*start)(void *closure);
 	int (*put)(void *closure, const char *name, int escape, FILE *file);
-	int (*enter)(void *closure, const char *name);
+	int (*enter)(void *closure, const char *name, int expected);
 	int (*next)(void *closure);
 	int (*leave)(void *closure);
 	int (*partial)(void *closure, const char *name, struct mustach_sbuf *sbuf);

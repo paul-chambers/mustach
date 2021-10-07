@@ -285,8 +285,9 @@ static int emit(void *closure, const char *buffer, size_t size, int escape, FILE
 	return r;
 }
 
-static int enter(void *closure, const char *name)
+static int enter(void *closure, const char *name, int expected)
 {
+	(void)expected;/*avoid warning*/
 	struct wrap *w = closure;
 	enum sel s = sel(w, name);
 	return s == S_none ? 0 : w->itf->enter(w->closure, s & S_objiter);
