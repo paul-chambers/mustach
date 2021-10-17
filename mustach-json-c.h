@@ -15,13 +15,15 @@
  */
 
 #include <json-c/json.h>
-#include "mustach-wrap.h"
+#include "mustach-common.h"
 
+#if defined(_mustach_wrap_h_included_)
 /**
  * Wrap interface used internally by mustach json-c functions.
  * Can be used for overriding behaviour.
  */
 extern const struct mustach_wrap_itf mustach_json_c_wrap_itf;
+#endif
 
 /**
  * mustach_json_c_file - Renders the mustache 'template' in 'file' for 'root'.
@@ -154,7 +156,7 @@ DEPRECATED_MUSTACH(extern int mustach_json_c(const char *template, struct json_o
  * Returns 0 in case of success, -1 with errno set in case of system error
  * a other negative value in case of error.
  */
-typedef mustach_write_cb_t *mustach_json_write_cb;
+DEPRECATED_MUSTACH_TYPE(typedef mustach_write_cb_t *mustach_json_write_cb);
 DEPRECATED_MUSTACH(extern int umustach_json_c(const char *template, struct json_object *root, mustach_write_cb_t *writecb, void *closure));
 
 #endif

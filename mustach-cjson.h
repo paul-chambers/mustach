@@ -15,13 +15,15 @@
  */
 
 #include <cjson/cJSON.h>
-#include "mustach-wrap.h"
+#include "mustach-common.h"
 
+#if defined(_mustach_wrap_h_included_)
 /**
  * Wrap interface used internally by mustach cJSON functions.
  * Can be used for overriding behaviour.
  */
 extern const struct mustach_wrap_itf mustach_cJSON_wrap_itf;
+#endif
 
 /**
  * mustach_cJSON_file - Renders the mustache 'template' in 'file' for 'root'.

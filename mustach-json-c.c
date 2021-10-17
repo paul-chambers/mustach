@@ -11,7 +11,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "mustach.h"
 #include "mustach-wrap.h"
 #include "mustach-json-c.h"
 

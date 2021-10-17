@@ -1,7 +1,7 @@
 # version
 MAJOR := 1
-MINOR := 2
-REVIS := 2
+MINOR := 3
+REVIS := 0
 
 # installation settings
 DESTDIR ?=
@@ -20,7 +20,7 @@ VERSION := $(MAJOR).$(MINOR).$(REVIS)
 SOVER := .$(MAJOR)
 SOVEREV := .$(MAJOR).$(MINOR)
 
-HEADERS := mustach.h mustach-wrap.h
+HEADERS := mustach.h mustach-common.h mustach-wrap.h
 SPLITLIB := libmustach-core.so$(SOVEREV)
 SPLITPC := libmustach-core.pc
 COREOBJS := mustach.o mustach-wrap.o
@@ -185,22 +185,22 @@ libmustach-jansson.so$(SOVEREV): $(COREOBJS) mustach-jansson.o
 
 # objects
 
-mustach.o: mustach.c mustach.h
+mustach.o: mustach.c mustach-common.h mustach.h
 	$(CC) -c $(CFLAGS) -o $@ $<
 
-mustach-wrap.o: mustach-wrap.c mustach.h mustach-wrap.h
+mustach-wrap.o: mustach-wrap.c mustach-common.h mustach.h mustach-wrap.h
 	$(CC) -c $(CFLAGS) -o $@ $<
 
-mustach-tool.o: mustach-tool.c mustach.h mustach-json-c.h $(TOOLDEP)
+mustach-tool.o: mustach-tool.c mustach-common.h $(TOOLDEP)
 	$(CC) -c $(CFLAGS) $(TOOLFLAGS) -o $@ $<
 
-mustach-cjson.o: mustach-cjson.c mustach.h mustach-wrap.h mustach-cjson.h
+mustach-cjson.o: mustach-cjson.c mustach-common.h mustach-wrap.h mustach-cjson.h
 	$(CC) -c $(CFLAGS) $(cjson_cflags) -o $@ $<
 
-mustach-json-c.o: mustach-json-c.c mustach.h mustach-wrap.h mustach-json-c.h
+mustach-json-c.o: mustach-json-c.c mustach-common.h mustach-wrap.h mustach-json-c.h
 	$(CC) -c $(CFLAGS) $(jsonc_cflags) -o $@ $<
 
-mustach-jansson.o: mustach-jansson.c mustach.h mustach-wrap.h mustach-jansson.h
+mustach-jansson.o: mustach-jansson.c mustach-common.h mustach-wrap.h mustach-jansson.h
 	$(CC) -c $(CFLAGS) $(jansson_cflags) -o $@ $<
 
 # installing

@@ -19,52 +19,7 @@
  * level features coming with extensions implemented by
  * this high level wrapper.
  */
-#include "mustach.h"
-/*
- * Definition of the writing callbacks for mustach functions
- * producing output to callbacks.
- *
- * Two callback types are defined:
- *
- * @mustach_write_cb_t:
- *
- *    callback receiving the escaped data to be written as 3 parameters:
- *
- *    1. the 'closure', the same given to the wmustach_... function
- *    2. a pointer to a 'buffer' containing the characters to be written
- *    3. the size in bytes of the data pointed by 'buffer'
- *
- * @mustach_emit_cb_t:
- *
- *    callback receiving the data to be written and a flag indicating
- *    if escaping should be done or not as 4 parameters:
- *
- *    1. the 'closure', the same given to the emustach_... function
- *    2. a pointer to a 'buffer' containing the characters to be written
- *    3. the size in bytes of the data pointed by 'buffer'
- *    4. a boolean indicating if 'escape' should be done
- */
-#ifndef _mustach_output_callbacks_defined_
-#define _mustach_output_callbacks_defined_
-typedef int mustach_write_cb_t(void *closure, const char *buffer, size_t size);
-typedef int mustach_emit_cb_t(void *closure, const char *buffer, size_t size, int escape);
-#endif
-
-/**
- * Flags specific to mustach wrap
- */
-#define Mustach_With_SingleDot            4     /* obsolete, always set */
-#define Mustach_With_Equal                8
-#define Mustach_With_Compare             16
-#define Mustach_With_JsonPointer         32
-#define Mustach_With_ObjectIter          64
-#define Mustach_With_IncPartial         128     /* obsolete, always set */
-#define Mustach_With_EscFirstCmp        256
-#define Mustach_With_PartialDataFirst   512
-#define Mustach_With_ErrorUndefined    1024
-
-#undef  Mustach_With_AllExtensions
-#define Mustach_With_AllExtensions     1023     /* don't include ErrorUndefined */
+#include "mustach-common.h"
 
 /**
  * mustach_wrap_itf - high level wrap of mustach - interface for callbacks

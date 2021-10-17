@@ -9,64 +9,7 @@
 #ifndef _mustach_h_included_
 #define _mustach_h_included_
 
-struct mustach_sbuf; /* see below */
-
-/**
- * Current version of mustach and its derivates
- */
-#define MUSTACH_VERSION 103
-#define MUSTACH_VERSION_MAJOR (MUSTACH_VERSION / 100)
-#define MUSTACH_VERSION_MINOR (MUSTACH_VERSION % 100)
-
-/**
- * Maximum nested imbrications supported
- */
-#define MUSTACH_MAX_DEPTH  256
-
-/**
- * Maximum length of tags in mustaches {{...}}
- */
-#define MUSTACH_MAX_LENGTH 4096
-
-/**
- * Maximum length of delimitors (2 normally but extended here)
- */
-#define MUSTACH_MAX_DELIM_LENGTH 8
-
-/**
- * Flags specific to mustach core
- */
-#define Mustach_With_NoExtensions   0
-#define Mustach_With_Colon          1
-#define Mustach_With_EmptyTag       2
-#define Mustach_With_AllExtensions  3
-
-/*
- * Definition of error codes returned by mustach
- */
-#define MUSTACH_OK                       0
-#define MUSTACH_ERROR_SYSTEM            -1
-#define MUSTACH_ERROR_UNEXPECTED_END    -2
-#define MUSTACH_ERROR_EMPTY_TAG         -3
-#define MUSTACH_ERROR_TAG_TOO_LONG      -4
-#define MUSTACH_ERROR_BAD_SEPARATORS    -5
-#define MUSTACH_ERROR_TOO_DEEP          -6
-#define MUSTACH_ERROR_CLOSING           -7
-#define MUSTACH_ERROR_BAD_UNESCAPE_TAG  -8
-#define MUSTACH_ERROR_INVALID_ITF       -9
-#define MUSTACH_ERROR_ITEM_NOT_FOUND    -10
-#define MUSTACH_ERROR_PARTIAL_NOT_FOUND -11
-#define MUSTACH_ERROR_UNDEFINED_TAG     -12
-
-/*
- * You can use definition below for user specific error
- *
- * The macro MUSTACH_ERROR_USER is involutive so for any value
- *   value = MUSTACH_ERROR_USER(MUSTACH_ERROR_USER(value))
- */
-#define MUSTACH_ERROR_USER_BASE         -100
-#define MUSTACH_ERROR_USER(x)           (MUSTACH_ERROR_USER_BASE-(x))
-#define MUSTACH_IS_ERROR_USER(x)        (MUSTACH_ERROR_USER(x) >= 0)
+#include "mustach-common.h"
 
 /**
  * mustach_itf - pure abstract mustach - interface for callbacks
@@ -182,41 +125,6 @@ struct mustach_itf {
 };
 
 /**
- * mustach_sbuf - Interface for handling zero terminated strings
- *
- * That structure is used for returning zero terminated strings -in 'value'-
- * to mustach. The callee can provide a function for releasing the returned
- * 'value'. Three methods for releasing the string are possible.
- *
- *  1. no release: set either 'freecb' or 'releasecb' with NULL (done by default)
- *  2. release without closure: set 'freecb' to its expected value
- *  3. release with closure: set 'releasecb' and 'closure' to their expected values
- *
- * @value: The value of the string. That value is not changed by mustach -const-.
- *
- * @freecb: The function to call for freeing the value without closure.
- *          For convenience, signature of that callback is compatible with 'free'.
- *          Can be NULL.
- *
- * @releasecb: The function to release with closure.
- *             Can be NULL.
- *
- * @closure: The closure to use for 'releasecb'.
- *
- * @length: Length of the value or zero if unknown and value null terminated.
- *          To return the empty string, let it to zero and let value to NULL.
- */
-struct mustach_sbuf {
-	const char *value;
-	union {
-		void (*freecb)(void*);
-		void (*releasecb)(const char *value, void *closure);
-	};
-	void *closure;
-	size_t length;
-};
-
-/**
  * mustach_file - Renders the mustache 'template' in 'file' for 'itf' and 'closure'.
  *
  * @template: the template string to instanciate
@@ -259,17 +167,6 @@ extern int mustach_fd(const char *template, size_t length, const struct mustach_
  */
 extern int mustach_mem(const char *template, size_t length, const struct mustach_itf *itf, void *closure, int flags, char **result, size_t *size);
 
-/***************************************************************************
-* compatibility with version before 1.0
-*/
-#ifdef __GNUC__
-#define DEPRECATED_MUSTACH(func) func __attribute__ ((deprecated))
-#elif defined(_MSC_VER)
-#define DEPRECATED_MUSTACH(func) __declspec(deprecated) func
-#elif !defined(DEPRECATED_MUSTACH)
-#pragma message("WARNING: You need to implement DEPRECATED_MUSTACH for this compiler")
-#define DEPRECATED_MUSTACH(func) func
-#endif
 /**
  * OBSOLETE use mustach_file
  *

@@ -17,11 +17,13 @@
 #include <jansson.h>
 #include "mustach-wrap.h"
 
+#if defined(_mustach_wrap_h_included_)
 /**
  * Wrap interface used internally by mustach jansson functions.
  * Can be used for overriding behaviour.
  */
 extern const struct mustach_wrap_itf mustach_jansson_wrap_itf;
+#endif
 
 /**
  * mustach_jansson_file - Renders the mustache 'template' in 'file' for 'root'.
